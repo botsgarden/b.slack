@@ -1,3 +1,3 @@
 # BeeSlack
 
-- run with revolver: `sbt ~re-start`
+- run with revolver: `sbt ~reStart`
