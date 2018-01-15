@@ -10,45 +10,49 @@ import io.vertx.scala.servicediscovery.{ServiceDiscovery, ServiceDiscoveryOption
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.util.{Failure, Success}
 
-object BeeSlack extends App {
+import io.vertx.lang.scala.ScalaVerticle
+import scala.concurrent.Future
 
-  val vertx = Vertx.vertx()
-  val vertx = Vertx.vertx()
-  val server = vertx.createHttpServer()
-  val router = Router.router(vertx)
-
-  val httpPort = sys.env.getOrElse("PORT", "8080").toInt
-
-  router.route().handler(BodyHandler.create)
-
-  router.get("/hey").handler(context => 
-    context
-      .response
-      .putHeader("content-type", "application/json;charset=UTF-8")
-      .end(new JsonObject().put("message", "👋 hey!").encodePrettily)                            
-  )
-
-  router.post("/yo").handler( context => {
-        
-    val message = context.getBodyAsJson() match {
-      case None => "???"
-      case Some(jsonObject) => jsonObject.getString("message")
-    }
-    println(message)
-    
-    context
-      .response
-      .putHeader("content-type", "application/json;charset=UTF-8")
-      .end(new JsonObject()
-        .put("message", s"👋 🌍 yo!: $message")
-        .encodePrettily
-      ) 
-
-  })
-
-  router.route("/*").handler(StaticHandler.create)
-
-  println(s"🌍 Listening on $httpPort  - Enjoy 😄")
-  server.requestHandler(router.accept).listen(httpPort)
+class BeeSlack extends ScalaVerticle {
   
+  override def startFuture(): Future[_] = {
+
+    val server = vertx.createHttpServer()
+    val router = Router.router(vertx)
+
+    val httpPort = sys.env.getOrElse("PORT", "8080").toInt
+
+    router.route().handler(BodyHandler.create)
+
+    router.get("/hey").handler(context => 
+      context
+        .response
+        .putHeader("content-type", "application/json;charset=UTF-8")
+        .end(new JsonObject().put("message", "👋 hey!").encodePrettily)                            
+    )
+
+    router.post("/yo").handler( context => {
+          
+      val message = context.getBodyAsJson match {
+        case None => "???"
+        case Some(jsonObject) => jsonObject.getString("message")
+      }
+      println(message)
+      
+      context
+        .response
+        .putHeader("content-type", "application/json;charset=UTF-8")
+        .end(new JsonObject()
+          .put("message", s"👋 🌍 yo!: $message")
+          .encodePrettily
+        ) 
+
+    })
+
+    router.route("/*").handler(StaticHandler.create)
+
+    println(s"🌍 Listening on $httpPort  - Enjoy 😄")
+    server.requestHandler(router.accept).listenFuture(httpPort)
+  }
+
 }

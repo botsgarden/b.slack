@@ -1,3 +1,6 @@
+import sbt.Package._
+import sbt._
+
 name := "b.slack"
 
 version := "1.0"
