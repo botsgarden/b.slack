@@ -1,4 +1,3 @@
-import sbt.Package._
 import sbt._
 
 name := "b.slack"
