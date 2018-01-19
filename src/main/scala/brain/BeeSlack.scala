@@ -1,4 +1,5 @@
 package brain
+
 import io.vertx.core.json.JsonObject
 import io.vertx.scala.core.Vertx
 import io.vertx.scala.ext.web.Router
@@ -81,9 +82,12 @@ class BeeSlack extends ScalaVerticle {
     unpublishRecordFuture.onComplete {
       case Success(result) => {
         println(s"😃 removing publication OK")
+        Future.successful(())
       }
       case Failure(cause) => {
         println(s"😡 removing publication KO: $cause")
+        Future.successful(())
+        //Future.failed(new Throwable())
       }
     }
     unpublishRecordFuture
@@ -129,7 +133,7 @@ class BeeSlack extends ScalaVerticle {
 
     router.route("/*").handler(StaticHandler.create)
 
-    println(s"🌍 Listening on $httpPort  - Enjoy 😄")
+    println(s"🌍 🐝 Bee Slack module Listening on $httpPort  - Enjoy 😄")
     server.requestHandler(router.accept _).listenFuture(httpPort)
   }
 
